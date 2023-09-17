@@ -30,7 +30,7 @@ site_configuration = {
                         "--distribution=block:block",
                         "--partition=cpu",
                         "-A p168",
-                    ],  # TODO: Change to it's own project
+                    ], 
                     "environs": [
                         "PrgEnv-gnu-nompi-nocuda",
                         "PrgEnv-gnu-nocuda",
