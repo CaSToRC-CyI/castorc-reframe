@@ -30,38 +30,38 @@ class castorc_osu_benchmarks(osu_build_run):
     maintainers = ['CS']
 
 
-# @rfm.simple_test
-# class castorc_osu_pt2pt_check(castorc_osu_benchmarks):
-#     valid_systems = ['cyclone:cpu']
-#     valid_prog_environs = ['PrgEnv-gnu-nocuda']
-#     benchmark_info = parameter([
-#         ('mpi.pt2pt.osu_bw', 'bandwidth'),
-#         ('mpi.pt2pt.osu_latency', 'latency')
-#     ], fmt=lambda x: x[0], loggable=True)
-#     osu_binaries = fixture(castorc_build_osu_benchmarks, scope='environment')
-#     allref = {
-#         'mpi.pt2pt.osu_bw': {
-#             'cpu': {
-#                 'cyclone:cpu': {
-#                     'bandwidth': (12329.94, -0.10, None, 'MB/s')
-#                 },
-#             },
-#         },
-#         'mpi.pt2pt.osu_latency': {
-#             'cpu': {
-#                 'cyclone:cpu': {
-#                     'latency': (0.98, None, 0.10, 'us')
-#                 },
-#             },
-#         }
-#     }
+@rfm.simple_test
+class castorc_osu_pt2pt_check(castorc_osu_benchmarks):
+    valid_systems = ['cyclone:cpu']
+    valid_prog_environs = ['PrgEnv-gnu-nocuda']
+    benchmark_info = parameter([
+        ('mpi.pt2pt.osu_bw', 'bandwidth'),
+        ('mpi.pt2pt.osu_latency', 'latency')
+    ], fmt=lambda x: x[0], loggable=True)
+    osu_binaries = fixture(castorc_build_osu_benchmarks, scope='environment')
+    allref = {
+        'mpi.pt2pt.osu_bw': {
+            'cpu': {
+                'cyclone:cpu': {
+                    'bandwidth': (12329.94, -0.10, None, 'MB/s')
+                },
+            },
+        },
+        'mpi.pt2pt.osu_latency': {
+            'cpu': {
+                'cyclone:cpu': {
+                    'latency': (0.98, None, 0.10, 'us')
+                },
+            },
+        }
+    }
 
-#     @run_after('init')
-#     def setup_per_build_type(self):
-#         build_type = self.osu_binaries.build_type
+    @run_after('init')
+    def setup_per_build_type(self):
+        build_type = self.osu_binaries.build_type
 
-#         with contextlib.suppress(KeyError):
-#             self.reference = self.allref[self.benchmark_info[0]][build_type]
+        with contextlib.suppress(KeyError):
+            self.reference = self.allref[self.benchmark_info[0]][build_type]
 
 
 @rfm.simple_test

@@ -119,7 +119,7 @@ class HPCGCheckMKL(rfm.RegressionTest, HPCGHookMixin):
     valid_prog_environs = ['PrgEnv-intel']
     build_system = 'Make'
     prebuild_cmds = ['cp -r ${MKLROOT}/benchmarks/hpcg/* .',
-                     'mv Make.CycloneCPU setup', './configure CycloneCPU']
+                     'mv Make.CycloneCPU setup', './configure CycloneCPU_Intel']
     executable = 'bin/xhpcg_skx'
     executable_opts = ['--nx=104', '--ny=104', '--nz=104', '-t2']
     exclusive_access = True
