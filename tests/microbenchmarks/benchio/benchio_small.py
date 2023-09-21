@@ -12,7 +12,7 @@ import contextlib
 class benchioSmallTest(rfm.RegressionTest):
 
     valid_systems = ['cyclone:cpu']
-    valid_prog_environs = ['PrgEnv-intel']
+    valid_prog_environs = ['PrgEnv-gnu-nocuda']
 
     tags = {'performance','short','io'}
     num_nodes = parameter([1,2])
