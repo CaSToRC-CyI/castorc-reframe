@@ -70,7 +70,7 @@ class castorc_osu_collective_check(castorc_osu_benchmarks):
         ('mpi.collective.osu_alltoall', 'latency'),
         ('mpi.collective.osu_allreduce', 'latency'),
     ], fmt=lambda x: x[0], loggable=True)
-    num_nodes = parameter([3, 6]) #TODO: Change to [# nodes in same rack, # nodes in same cabinet]
+    num_nodes = parameter([3, 6])
     extra_resources = {
         'switches': {
             'num_switches': 1
