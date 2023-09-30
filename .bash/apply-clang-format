@@ -27,7 +27,6 @@ if [ ! -f ".bash/apply-clang-format" ]; then
 fi
 
 TRACKED_FILES="$(git ls-files)"
-echo $TRACKED_FILES
 
 find ${TRACKED_FILES} \
   -type f -name '*.cpp' -o -name '*.hpp' -o -name '*.cc' -o -name '*.c' -o -name '*.h' |
