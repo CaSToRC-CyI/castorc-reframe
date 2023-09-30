@@ -5,7 +5,7 @@ name: pycode-formatter
 on: [push, pull_request]
 
 jobs:
-  black-n-pylint:
+  black:
     runs-on: ubuntu-latest
 
     steps:
