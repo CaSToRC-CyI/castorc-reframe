@@ -1,11 +1,8 @@
 # This workflow runs pylint and updates badge
 
-name: pylint
+name: pycode-formatter
 
-on:
-  pull_request:
-    branches:
-      - "main"
+on: [push, pull_request]
 
 jobs:
   black-n-pylint:
