@@ -9,20 +9,20 @@ import reframe.utility.sanity as sn
 
 
 class HPCGHookMixin(rfm.RegressionMixin):
-    @run_before('run')
+    @run_before("run")
     def guide_node_guess(self):
-        '''Guide the node guess based on the test's needs.'''
+        """Guide the node guess based on the test's needs."""
 
         # Prelim guess
         ntasks_per_node = self.num_tasks_per_node or 1
         self.job.num_tasks_per_node = ntasks_per_node
-        n = int(self.job.guess_num_tasks()/ntasks_per_node)
+        n = int(self.job.guess_num_tasks() / ntasks_per_node)
 
         def first_factor(x):
             if x <= 1:
                 return 1
 
-            for i in range(2, x+1):
+            for i in range(2, x + 1):
                 if x % i == 0:
                     return i
 
@@ -32,7 +32,7 @@ class HPCGHookMixin(rfm.RegressionMixin):
         # Correct the prelim node numbers
         # n = 11 would be the first number not meeting HPCG's condition
         while n > 10:
-            x = int(n/first_factor(n))
+            x = int(n / first_factor(n))
 
             # If x==1, n is prime
             # if x > 8 and prime, it would also not meet HPCG's aspect ratio
@@ -41,102 +41,103 @@ class HPCGHookMixin(rfm.RegressionMixin):
             else:
                 break
 
-        self.num_tasks = int(n*ntasks_per_node)
+        self.num_tasks = int(n * ntasks_per_node)
         self.num_tasks_per_node = ntasks_per_node
+
 
 @rfm.simple_test
 class HPCGCheckRef(rfm.RegressionTest, HPCGHookMixin):
-    descr = 'HPCG reference benchmark'
-    valid_systems = ['cyclone:cpu']
-    valid_prog_environs = ['PrgEnv-gnu-nocuda']
-    build_system = 'Make'
-    sourcesdir = 'https://github.com/hpcg-benchmark/hpcg.git'
-    executable = 'bin/xhpcg'
-    executable_opts = ['--nx=104', '--ny=104', '--nz=104', '-t2']
+    descr = "HPCG reference benchmark"
+    valid_systems = ["cyclone:cpu"]
+    valid_prog_environs = ["PrgEnv-gnu-nocuda"]
+    build_system = "Make"
+    sourcesdir = "https://github.com/hpcg-benchmark/hpcg.git"
+    executable = "bin/xhpcg"
+    executable_opts = ["--nx=104", "--ny=104", "--nz=104", "-t2"]
     # use glob to catch the output file suffix dependent on execution time
-    output_file = sn.getitem(sn.glob('HPCG*.txt'), 0)
+    output_file = sn.getitem(sn.glob("HPCG*.txt"), 0)
     num_tasks = 0
     num_cpus_per_task = 1
     exclusive_access = True
 
-    reference = {
-        'cyclone:cpu': {
-            'gflops': (23.73, -0.1, None, 'Gflop/s')
-        }
-    }
+    reference = {"cyclone:cpu": {"gflops": (23.73, -0.1, None, "Gflop/s")}}
 
-    maintainers = ['CS']
-    tags = {'diagnostic', 'benchmark'}
+    maintainers = ["CS"]
+    tags = {"diagnostic", "benchmark"}
 
-
-    @run_before('compile')
+    @run_before("compile")
     def set_build_opts(self):
-        self.build_system.options = ['arch=MPI_GCC_OMP']
-
+        self.build_system.options = ["arch=MPI_GCC_OMP"]
 
     @property
     @deferrable
     def num_tasks_assigned(self):
         return self.job.num_tasks
 
-    @run_before('compile')
+    @run_before("compile")
     def set_tasks(self):
-        # FIXME: Auto-detecting processor info for remote partition is currently problematic. 
+        # FIXME: Auto-detecting processor info for remote partition is currently problematic.
         # See #2914 for more info - Hardcode values until is fixed
         if self.current_partition.processor.num_cores:
-            self.num_tasks_per_node = (
-                self.current_partition.processor.num_cores
-            )
+            self.num_tasks_per_node = self.current_partition.processor.num_cores
         else:
-            if self.current_system.name in 'cyclone' and self.current_partition.name in 'cpu':
-                self.num_tasks_per_node=40
+            if (
+                self.current_system.name in "cyclone"
+                and self.current_partition.name in "cpu"
+            ):
+                self.num_tasks_per_node = 40
             else:
-                self.num_tasks_per_node=1
+                self.num_tasks_per_node = 1
 
-    @performance_function('Gflop/s')
+    @performance_function("Gflop/s")
     def gflops(self):
         num_nodes = self.num_tasks_assigned // self.num_tasks_per_node
         return (
             sn.extractsingle(
-                r'HPCG result is VALID with a GFLOP\/s rating of=\s*'
-                r'(?P<perf>\S+)',
-                self.output_file, 'perf',  float) / num_nodes
+                r"HPCG result is VALID with a GFLOP\/s rating of=\s*" r"(?P<perf>\S+)",
+                self.output_file,
+                "perf",
+                float,
+            )
+            / num_nodes
         )
 
     @sanity_function
     def validate_passed(self):
-        return sn.all([
-            sn.assert_eq(4, sn.count(
-                sn.findall(r'PASSED', self.output_file))),
-            sn.assert_eq(0, self.num_tasks_assigned % self.num_tasks_per_node)
-        ])
+        return sn.all(
+            [
+                sn.assert_eq(4, sn.count(sn.findall(r"PASSED", self.output_file))),
+                sn.assert_eq(0, self.num_tasks_assigned % self.num_tasks_per_node),
+            ]
+        )
 
 
 @rfm.simple_test
 class HPCGCheckMKL(rfm.RegressionTest, HPCGHookMixin):
-    descr = 'HPCG benchmark Intel MKL implementation'
-    valid_systems = ['cyclone:cpu']
-    valid_prog_environs = ['PrgEnv-intel']
-    build_system = 'Make'
-    prebuild_cmds = ['cp -r ${MKLROOT}/benchmarks/hpcg/* .',
-                     'mv Make.CycloneCPU setup', './configure CycloneCPU_Intel']
-    executable = 'bin/xhpcg_skx'
-    executable_opts = ['--nx=104', '--ny=104', '--nz=104', '-t2']
+    descr = "HPCG benchmark Intel MKL implementation"
+    valid_systems = ["cyclone:cpu"]
+    valid_prog_environs = ["PrgEnv-intel"]
+    build_system = "Make"
+    prebuild_cmds = [
+        "cp -r ${MKLROOT}/benchmarks/hpcg/* .",
+        "mv Make.CycloneCPU setup",
+        "./configure CycloneCPU_Intel",
+    ]
+    executable = "bin/xhpcg_skx"
+    executable_opts = ["--nx=104", "--ny=104", "--nz=104", "-t2"]
     exclusive_access = True
     num_tasks = 0
     env_vars = {
-        'I_MPI_PMI_LIBRARY': '/usr/lib64/libpmi.so',
-        'KMP_AFFINITY': 'granularity=fine,compact'
-    }
-    
-    reference = {
-        'cyclone:cpu': {
-            'gflops': (38.10, -0.1, None, 'Gflop/s')
-        },
+        "I_MPI_PMI_LIBRARY": "/usr/lib64/libpmi.so",
+        "KMP_AFFINITY": "granularity=fine,compact",
     }
 
-    maintainers = ['CS']
-    tags = {'diagnostic', 'benchmark'}
+    reference = {
+        "cyclone:cpu": {"gflops": (38.10, -0.1, None, "Gflop/s")},
+    }
+
+    maintainers = ["CS"]
+    tags = {"diagnostic", "benchmark"}
 
     @property
     @deferrable
@@ -146,26 +147,25 @@ class HPCGCheckMKL(rfm.RegressionTest, HPCGHookMixin):
     @property
     @deferrable
     def outfile_lazy(self):
-        pattern = (f'n104-{self.job.num_tasks}p-'
-                   f'{self.num_cpus_per_task}t*.*')
+        pattern = f"n104-{self.job.num_tasks}p-" f"{self.num_cpus_per_task}t*.*"
         return sn.getitem(sn.glob(pattern), 0)
 
-
-    @run_before('compile')
+    @run_before("compile")
     def set_tasks(self):
-        # FIXME: Auto-detecting processor info for remote partition is currently problematic. 
+        # FIXME: Auto-detecting processor info for remote partition is currently problematic.
         # See #2914 for more info - Hardcode values until is fixed
         if self.current_partition.processor.num_cores:
-            self.num_tasks_per_node = (
-                self.current_partition.processor.num_cores
-            )
+            self.num_tasks_per_node = self.current_partition.processor.num_cores
         else:
-            if self.current_system.name in 'cyclone' and self.current_partition.name in 'cpu':
-                self.num_tasks_per_node=40
+            if (
+                self.current_system.name in "cyclone"
+                and self.current_partition.name in "cpu"
+            ):
+                self.num_tasks_per_node = 40
             else:
-                self.num_tasks_per_node=1
+                self.num_tasks_per_node = 1
 
-    @performance_function('Gflop/s')
+    @performance_function("Gflop/s")
     def gflops(self):
         # since this is a flexible test, we divide the extracted
         # performance by the number of nodes and compare
@@ -173,24 +173,28 @@ class HPCGCheckMKL(rfm.RegressionTest, HPCGHookMixin):
         num_nodes = self.num_tasks_assigned // self.num_tasks_per_node
         return (
             sn.extractsingle(
-                r'HPCG result is VALID with a GFLOP\/s rating of(=|:)\s*'
-                r'(?P<perf>\S+)',
-                self.outfile_lazy, 'perf',  float) / num_nodes
+                r"HPCG result is VALID with a GFLOP\/s rating of(=|:)\s*"
+                r"(?P<perf>\S+)",
+                self.outfile_lazy,
+                "perf",
+                float,
+            )
+            / num_nodes
         )
 
     @sanity_function
     def validate_passed(self):
-        return sn.all([
-            sn.assert_not_found(
-                r'invalid because the ratio',
-                self.outfile_lazy,
-                msg='number of processes assigned could not be factorized'
-            ),
-            sn.assert_eq(
-                4, sn.count(sn.findall(r'PASSED', self.outfile_lazy))
-            ),
-            sn.assert_eq(0, self.num_tasks_assigned % self.num_tasks_per_node)
-        ])
+        return sn.all(
+            [
+                sn.assert_not_found(
+                    r"invalid because the ratio",
+                    self.outfile_lazy,
+                    msg="number of processes assigned could not be factorized",
+                ),
+                sn.assert_eq(4, sn.count(sn.findall(r"PASSED", self.outfile_lazy))),
+                sn.assert_eq(0, self.num_tasks_assigned % self.num_tasks_per_node),
+            ]
+        )
 
 
 # @rfm.simple_test

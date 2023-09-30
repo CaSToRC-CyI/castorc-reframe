@@ -101,14 +101,13 @@ class HelloWorldTestSerial(HelloWorldBaseTest):
     num_tasks_per_node = 1
     num_cpus_per_task = 1
 
-
     @run_after("init")
     def update_description(self):
         self.descr += " Serial "
 
     # @run_after("setup")
-    # def extend_valid_prog_environs(self):     
-    #     cs = self.current_system.name   
+    # def extend_valid_prog_environs(self):
+    #     cs = self.current_system.name
     #     cp = self.current_partition.name
 
     #     print(f"System = {cs} and Partition = {cp}")
@@ -121,12 +120,12 @@ class HelloWorldTestSerial(HelloWorldBaseTest):
     #         print(self.valid_prog_environs)
 
     @run_after("setup")
-    def set_ngpus(self):     
-        cs = self.current_system.name   
+    def set_ngpus(self):
+        cs = self.current_system.name
         cp = self.current_partition.name
 
         if cs in ["cyclone"] and cp in ["gpu"]:
-            self.extra_resources = {'gres': {'num_gpus_per_node': '1'}}
+            self.extra_resources = {"gres": {"num_gpus_per_node": "1"}}
 
     @run_before("compile")
     def update_sourcepath(self):
@@ -143,12 +142,14 @@ class HelloWorldTestOpenMP(HelloWorldBaseTest):
     @run_after("init")
     def set_prgenv_compilation_flags_map(self):
         self.prgenv_flags = {
-            "PrgEnv-gnu" : ["-fopenmp"],
-            "PrgEnv-nvidia" : ["-fopenmp" if self.lang == 'f90' else "-Xcompiler -fopenmp"],
-            "PrgEnv-gnu-nompi-nocuda" : ["-fopenmp"],
-            "PrgEnv-gnu-nocuda" : ["-fopenmp"],
-            "PrgEnv-intel-nompi" : ["-qopenmp"],
-            "PrgEnv-intel" : ["-qopenmp"],
+            "PrgEnv-gnu": ["-fopenmp"],
+            "PrgEnv-nvidia": [
+                "-fopenmp" if self.lang == "f90" else "-Xcompiler -fopenmp"
+            ],
+            "PrgEnv-gnu-nompi-nocuda": ["-fopenmp"],
+            "PrgEnv-gnu-nocuda": ["-fopenmp"],
+            "PrgEnv-intel-nompi": ["-qopenmp"],
+            "PrgEnv-intel": ["-qopenmp"],
         }
 
     @run_after("init")
@@ -188,7 +189,7 @@ class HelloWorldTestMPI(HelloWorldBaseTest):
 
     @run_before("run")
     def set_impi_env_variable(self):
-        cs = self.current_system.name   
+        cs = self.current_system.name
         ce = self.current_environ.name
 
         if cs in ["cyclone"] and ce in ["PrgEnv-intel"]:
@@ -203,14 +204,14 @@ class HelloWorldTestMPIOpenMP(HelloWorldBaseTest):
     num_tasks_per_node = 3
     num_cpus_per_task = 4
     valid_systems = ["cyclone:cpu"]
-    valid_prog_environs = ["PrgEnv-gnu-nocuda" , "PrgEnv-gnu", "PrgEnv-intel"]
+    valid_prog_environs = ["PrgEnv-gnu-nocuda", "PrgEnv-gnu", "PrgEnv-intel"]
 
     @run_after("init")
     def set_prgenv_compilation_flags_map(self):
         self.prgenv_flags = {
-            "PrgEnv-gnu" : ["-fopenmp"],
-            "PrgEnv-gnu-nocuda" : ["-fopenmp"],
-            "PrgEnv-intel" : ["-qopenmp"],
+            "PrgEnv-gnu": ["-fopenmp"],
+            "PrgEnv-gnu-nocuda": ["-fopenmp"],
+            "PrgEnv-intel": ["-qopenmp"],
         }
 
     @run_after("init")
@@ -229,7 +230,7 @@ class HelloWorldTestMPIOpenMP(HelloWorldBaseTest):
 
     @run_before("run")
     def set_impi_env_variable(self):
-        cs = self.current_system.name   
+        cs = self.current_system.name
         ce = self.current_environ.name
 
         if cs in ["cyclone"] and ce in ["PrgEnv-intel"]:

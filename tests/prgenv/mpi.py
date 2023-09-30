@@ -6,10 +6,11 @@
 import reframe as rfm
 import reframe.utility.sanity as sn
 
+
 @rfm.simple_test
 class MpiInitTest(rfm.RegressionTest):
-    required_thread = parameter(['single', 'funneled', 'serialized', 'multiple'])
-    '''This test checks the value returned by calling MPI_Init_thread.
+    required_thread = parameter(["single", "funneled", "serialized", "multiple"])
+    """This test checks the value returned by calling MPI_Init_thread.
 
     Output should look the same for every prgenv
     (mpi_thread_multiple seems to be not supported):
@@ -30,42 +31,47 @@ class MpiInitTest(rfm.RegressionTest):
     ['mpi_thread_supported=MPI_THREAD_SERIALIZED
       mpi_thread_queried=MPI_THREAD_SERIALIZED 2']
 
-    '''
+    """
 
-    def __init__(self, require_version='>=2.14.0'):
+    def __init__(self, require_version=">=2.14.0"):
         self.valid_systems = ["cyclone:cpu"]
         self.valid_prog_environs = ["PrgEnv-gnu-nocuda", "PrgEnv-gnu", "PrgEnv-intel"]
-        self.build_system = 'SingleSource'
+        self.build_system = "SingleSource"
         self.sourcesdir = "src/mpi_thread"
         self.sourcepath = "mpi_init_thread.cpp"
         self.cppflags = {
-            'single':     ['-D_MPI_THREAD_SINGLE'],
-            'funneled':   ['-D_MPI_THREAD_FUNNELED'],
-            'serialized': ['-D_MPI_THREAD_SERIALIZED'],
-            'multiple':   ['-D_MPI_THREAD_MULTIPLE']
+            "single": ["-D_MPI_THREAD_SINGLE"],
+            "funneled": ["-D_MPI_THREAD_FUNNELED"],
+            "serialized": ["-D_MPI_THREAD_SERIALIZED"],
+            "multiple": ["-D_MPI_THREAD_MULTIPLE"],
         }
         self.build_system.cppflags = self.cppflags[self.required_thread]
-        self.time_limit = '1m'
+        self.time_limit = "1m"
         found_mpithread = sn.extractsingle(
-            r'^mpi_thread_required=\w+\s+mpi_thread_supported=\w+'
-            r'\s+mpi_thread_queried=\w+\s+(?P<result>\d)$',
-            self.stdout, 1, int)
+            r"^mpi_thread_required=\w+\s+mpi_thread_supported=\w+"
+            r"\s+mpi_thread_queried=\w+\s+(?P<result>\d)$",
+            self.stdout,
+            1,
+            int,
+        )
         self.mpithread_version = {
-            'single':     0,
-            'funneled':   1,
-            'serialized': 2,
-            'multiple':   3
+            "single": 0,
+            "funneled": 1,
+            "serialized": 2,
+            "multiple": 3,
         }
-        self.sanity_patterns = sn.all([
-            sn.assert_found(r'tid=0 out of 1 from rank 0 out of 1',
-                            self.stdout),
-            sn.assert_eq(found_mpithread,
-                         self.mpithread_version[self.required_thread])
-        ])
+        self.sanity_patterns = sn.all(
+            [
+                sn.assert_found(r"tid=0 out of 1 from rank 0 out of 1", self.stdout),
+                sn.assert_eq(
+                    found_mpithread, self.mpithread_version[self.required_thread]
+                ),
+            ]
+        )
 
     @run_before("run")
     def set_impi_env_variable(self):
-        cs = self.current_system.name   
+        cs = self.current_system.name
         ce = self.current_environ.name
 
         if cs in ["cyclone"] and ce in ["PrgEnv-intel"]:
@@ -79,21 +85,23 @@ class MpiHelloTest(rfm.RegressionTest):
         self.valid_systems = ["cyclone:cpu"]
         self.valid_prog_environs = ["PrgEnv-gnu-nocuda", "PrgEnv-gnu", "PrgEnv-intel"]
 
-        self.descr = 'MPI Hello World'
+        self.descr = "MPI Hello World"
         self.sourcesdir = "src/mpi"
-        self.sourcepath = 'mpi_helloworld.c'
+        self.sourcepath = "mpi_helloworld.c"
         self.num_tasks_per_node = 1
         self.num_tasks = 2
-        self.time_limit = '1m'
+        self.time_limit = "1m"
         num_processes = sn.extractsingle(
-            r'Received correct messages from (?P<nprocs>\d+) processes',
-            self.stdout, 'nprocs', int)
-        self.sanity_patterns = sn.assert_eq(num_processes,
-                                            self.num_tasks_assigned-1)
+            r"Received correct messages from (?P<nprocs>\d+) processes",
+            self.stdout,
+            "nprocs",
+            int,
+        )
+        self.sanity_patterns = sn.assert_eq(num_processes, self.num_tasks_assigned - 1)
 
     @run_before("run")
     def set_impi_env_variable(self):
-        cs = self.current_system.name   
+        cs = self.current_system.name
         ce = self.current_environ.name
 
         if cs in ["cyclone"] and ce in ["PrgEnv-intel"]:
