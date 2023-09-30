@@ -53,7 +53,7 @@ int main(int argc, const char *argv[]) {
       if (end == 0) {
         pinputbuf = inputbuf;
         while (*pinputbuf == ' ') pinputbuf++;
-        end = !((*pinputbuf >= '0') && (*pinputbuf <= '9'));
+        end       = !((*pinputbuf >= '0') && (*pinputbuf <= '9'));
         pinputbuf = inputbuf;
       }
     }
@@ -71,7 +71,7 @@ int main(int argc, const char *argv[]) {
         exit(1);
       }
       dim_size = (int *)malloc(ndims * sizeof(*dim_size));
-      periods = (int *)malloc(ndims * sizeof(*periods));
+      periods  = (int *)malloc(ndims * sizeof(*periods));
       halosize = (int *)malloc(ndims * sizeof(*halosize));
 
       for (i = 0; i < ndims; i++) {
@@ -156,7 +156,7 @@ int main(int argc, const char *argv[]) {
         sendbuf = (char *)malloc(ndims * 2 * j * sizeof(char));
         recvbuf = (char *)malloc(ndims * 2 * j * sizeof(char));
         request = (MPI_Request *)malloc(ndims * 2 * 2 * sizeof(MPI_Request));
-        status = (MPI_Status *)malloc(ndims * 2 * 2 * sizeof(MPI_Status));
+        status  = (MPI_Status *)malloc(ndims * 2 * 2 * sizeof(MPI_Status));
 
         start = MPI_Wtime();
 
@@ -207,7 +207,7 @@ int main(int argc, const char *argv[]) {
           }
         }
 
-        stop = MPI_Wtime();
+        stop         = MPI_Wtime();
         elapsed_time = stop - start;
         if (MPI_Reduce(&elapsed_time, &deltatmin, 1, MPI_DOUBLE, MPI_MIN, 0,
                        cart_comm) != 0) {

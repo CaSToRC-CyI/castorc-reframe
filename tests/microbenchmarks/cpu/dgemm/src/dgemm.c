@@ -8,13 +8,13 @@ extern void dgemm_(char*, char*, int*, int*, int*, double*, double*, int*,
 
 int main(int argc, char* argv[]) {
   double alpha = 1.2;
-  double beta = 1.0e-3;
+  double beta  = 1.0e-3;
   double gflop;
   double time_avg;
 
-  int m = 1024;
-  int n = 2048;
-  int k = 512;
+  int m          = 1024;
+  int n          = 2048;
+  int k          = 512;
   int LOOP_COUNT = 10;
   int i;
 

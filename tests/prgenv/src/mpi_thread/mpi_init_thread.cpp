@@ -59,8 +59,7 @@ int main(int argc, char **argv) {
     case MPI_THREAD_MULTIPLE:
       cout << "mpi_thread_supported=MPI_THREAD_MULTIPLE";
       break;
-    default:
-      cout << "mpi_thread_supported=UNKNOWN";
+    default: cout << "mpi_thread_supported=UNKNOWN";
   }
 
   // Return the level of thread support provided by the MPI library:

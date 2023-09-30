@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
 #pragma omp parallel default(shared) private(tid)
   {
     int nthreads = omp_get_num_threads();
-    tid = omp_get_thread_num();
+    tid          = omp_get_thread_num();
     printf("Hello, World from thread %d out of %d from process %d out of %d\n",
            tid, nthreads, rank, size);
   }
