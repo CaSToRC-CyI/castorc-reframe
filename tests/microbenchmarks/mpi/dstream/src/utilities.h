@@ -13,4 +13,3 @@
 int name_to_colour(const char *);
 int get_key();
 unsigned long get_processor_and_core(int *chip, int *core);
-

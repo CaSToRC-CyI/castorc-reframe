@@ -398,7 +398,7 @@ int checktick() {
 
   minDelta = 1000000;
   for (i = 1; i < M; i++) {
-    Delta = (int)(1.0E6 * (timesfound[i] - timesfound[i - 1]));
+    Delta    = (int)(1.0E6 * (timesfound[i] - timesfound[i - 1]));
     minDelta = MIN(minDelta, MAX(Delta, 0));
   }
 

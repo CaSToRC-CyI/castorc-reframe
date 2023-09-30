@@ -9,8 +9,8 @@ int main(int argc, char **argv) {
   char msg_buff[MSG_SIZE_MAX + 1];
   size_t msg_len = strnlen(msg, MSG_SIZE_MAX);
   int rank, num_tasks, i;
-  int dest = 0;
-  int tag = 0;
+  int dest       = 0;
+  int tag        = 0;
   int nr_correct = 0;
   MPI_Status status;
 
