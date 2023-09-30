@@ -8,25 +8,27 @@ import reframe.utility.sanity as sn
 
 
 @rfm.simple_test
-class StreamTest(rfm.RegressionTest):
+class StreamTestCycloneCPU(rfm.RegressionTest):
     '''This test checks the stream test:
        Function    Best Rate MB/s  Avg time     Min time     Max time
        Triad:          13991.7     0.017174     0.017153     0.017192
     '''
 
+    # TODO: Generalize this to use a list with all available nodes
+    node_id = parameter(['cn02', 'cn06', 'cn07'])
+
     def __init__(self):
         self.descr = 'STREAM Benchmark'
         self.exclusive_access = True
         self.valid_systems = ['cyclone:cpu']
-        self.valid_prog_environs = ['PrgEnv-gnu-nocuda', 'PrgEnv-intel']
-
-        self.use_multithreading = False
+        self.valid_prog_environs = ['PrgEnv-gnu-nocuda']
 
         self.prgenv_flags = {
             'PrgEnv-gnu-nocuda': ['-fopenmp', '-O3'],
             'PrgEnv-intel': ['-qopenmp', '-O3'],
         }
 
+        self.use_multithreading = False
         self.exclusive_access = True
         self.sourcepath = 'stream.c'
         self.build_system = 'SingleSource'
@@ -58,14 +60,8 @@ class StreamTest(rfm.RegressionTest):
                                 'add': (77600, -0.05, None, 'MB/s'),
                                 'triad': (79300, -0.05, None, 'MB/s')},
             },
-            'PrgEnv-intel': {
-                'cyclone:cpu': {'copy': (92900, -0.05, None, 'MB/s'),
-                                'scale': (91600, -0.05, None, 'MB/s'),
-                                'add': (96700, -0.05, None, 'MB/s'),
-                                'triad': (96700, -0.05, None, 'MB/s')},
-            },
         }
-        self.tags = {'production'}
+        self.tags = {'maintenance'}
         self.maintainers = ['CS']
 
     @run_after('setup')
@@ -81,3 +77,7 @@ class StreamTest(rfm.RegressionTest):
             self.reference = self.stream_bw_reference[envname]
         except KeyError:
             self.reference = self.stream_bw_reference['PrgEnv-gnu-nocuda']
+            
+    @run_before('run')
+    def setup_resources(self):
+        self.job.options = [f'--nodelist={self.node_id}']
