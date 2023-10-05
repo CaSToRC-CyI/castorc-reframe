@@ -48,10 +48,7 @@ train_sampler = DistributedSampler(
     train_set, num_replicas=world_size, rank=rank, shuffle=False, seed=42
 )
 train_loader = DataLoader(
-    train_set,
-    batch_size=batch_size_per_gpu,
-    shuffle=False,
-    sampler=train_sampler
+    train_set, batch_size=batch_size_per_gpu, shuffle=False, sampler=train_sampler
 )
 
 
@@ -86,6 +83,6 @@ for epoch in range(num_epochs):
 
 imgs_sec_total = np.mean(imgs_sec) * world_size * device_count
 if rank == 0:
-    print(f' * Total average: {imgs_sec_total:.2f} images/sec')
+    print(f" * Total average: {imgs_sec_total:.2f} images/sec")
 
 dist.destroy_process_group()

@@ -4,10 +4,10 @@ import reframe.utility.sanity as sn
 
 @rfm.simple_test
 class pytorch_distr_cnn(rfm.RunOnlyRegressionTest):
-    descr = 'Check the training throughput of a cnn with torch.distributed'
-    valid_systems = ['cyclone:gpu']
-    valid_prog_environs = ['PrgEnv-gnu']
-    sourcesdir = 'src'
+    descr = "Check the training throughput of a cnn with torch.distributed"
+    valid_systems = ["cyclone:gpu"]
+    valid_prog_environs = ["PrgEnv-gnu"]
+    sourcesdir = "src"
     exclusive_access = True
     use_multithreading = False
     num_tasks = 16
@@ -15,7 +15,7 @@ class pytorch_distr_cnn(rfm.RunOnlyRegressionTest):
     num_nodes = num_tasks // num_tasks_per_node
     num_gpus_per_node = num_tasks_per_node
     throughput_per_gpu = 309.61
-    executable = 'python cnn_distr.py'
+    executable = "python cnn_distr.py"
     throughput_total = throughput_per_gpu * num_tasks
 
     reference = {
@@ -25,8 +25,8 @@ class pytorch_distr_cnn(rfm.RunOnlyRegressionTest):
         }
     }
 
-    tags = {'production'}
-    modules = ['torchvision/0.13.1-foss-2022a-CUDA-11.7.0']
+    tags = {"production"}
+    modules = ["torchvision/0.13.1-foss-2022a-CUDA-11.7.0"]
 
     @sanity_function
     def assert_job_is_complete(self):
