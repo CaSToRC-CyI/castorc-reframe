@@ -1,7 +1,6 @@
 import os
 import hostlist
 
-
 class DistributedEnviron():
     def __init__(self):
         self._setup_distr_env()

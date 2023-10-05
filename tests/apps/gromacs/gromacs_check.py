@@ -40,7 +40,6 @@ class GromacsBaseCheck(rfm.RunOnlyRegressionTest):
         }
 
         self.maintainers = ["CS"]
-        self.strict_check = False
         self.strict_check = True
         self.use_multithreading = False
         self.num_nodes = 2

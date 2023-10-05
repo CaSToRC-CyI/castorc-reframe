@@ -8,11 +8,13 @@ class pytorch_distr_cnn(rfm.RunOnlyRegressionTest):
     valid_systems = ['cyclone:gpu']
     valid_prog_environs = ['PrgEnv-gnu']
     sourcesdir = 'src'
+    exclusive_access = True
+    use_multithreading = False
     num_tasks = 16
     num_tasks_per_node = 4
     num_nodes = num_tasks // num_tasks_per_node
     num_gpus_per_node = num_tasks_per_node
-    throughput_per_gpu = 864.62
+    throughput_per_gpu = 309.61
     executable = 'python cnn_distr.py'
     throughput_total = throughput_per_gpu * num_tasks
     
@@ -25,8 +27,10 @@ class pytorch_distr_cnn(rfm.RunOnlyRegressionTest):
         }
     }
     tags = {'production'}
-    modules = ['PyTorch/1.12.1-foss-2022a-CUDA-11.7.0']
+    # modules = ['PyTorch/1.12.1-foss-2022a-CUDA-11.7.0']
+    modules = ['torchvision/0.13.1-foss-2022a-CUDA-11.7.0']
 
+    # prerun_cmds = ['. /nvme/h/cy21cs1/miniconda3/etc/profile.d/conda.sh', 'conda activate rfm']
 
     @sanity_function
     def assert_job_is_complete(self):

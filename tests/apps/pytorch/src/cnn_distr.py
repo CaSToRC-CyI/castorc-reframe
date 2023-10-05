@@ -14,7 +14,7 @@ from pt_distr_env import DistributedEnviron
 
 num_warmup_epochs = 2
 num_epochs = 5
-batch_size_per_gpu = 1024
+batch_size_per_gpu = 256
 num_iters = 25
 model_name = 'resnet50'
 
@@ -22,7 +22,7 @@ distr_env = DistributedEnviron()
 dist.init_process_group(backend="nccl")
 world_size = dist.get_world_size()
 rank = dist.get_rank()
-device = distr_env.local_rank  # since CUDA_VISIBLE_DEVICES=$SLURM_LOCALID
+device = 0  # distr_env.local_rank  # since CUDA_VISIBLE_DEVICES=$SLURM_LOCALID
 device_count = torch.cuda.device_count()
 
 model = getattr(models, model_name)()
@@ -55,8 +55,7 @@ train_loader = DataLoader(
     train_set,
     batch_size=batch_size_per_gpu,
     shuffle=False,
-    sampler=train_sampler,
-    num_workers=32
+    sampler=train_sampler
 )
 
 
@@ -90,3 +89,5 @@ for epoch in range(num_epochs):
 imgs_sec_total = np.mean(imgs_sec) * world_size * device_count
 if rank == 0:
     print(f' * Total average: {imgs_sec_total:.2f} images/sec')
+
+dist.destroy_process_group()
