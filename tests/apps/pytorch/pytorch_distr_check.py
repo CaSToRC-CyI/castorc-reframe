@@ -4,30 +4,18 @@ import reframe.utility.sanity as sn
 
 @rfm.simple_test
 class pytorch_distr_cnn(rfm.RunOnlyRegressionTest):
-<<<<<<< HEAD
     descr = 'Check the training throughput of a cnn with torch.distributed'
     valid_systems = ['cyclone:gpu']
     valid_prog_environs = ['PrgEnv-gnu']
     sourcesdir = 'src'
     exclusive_access = True
     use_multithreading = False
-=======
-    descr = "Check the training throughput of a cnn with torch.distributed"
-    valid_systems = ["cyclone:gpu"]
-    valid_prog_environs = ["PrgEnv-gnu"]
-    sourcesdir = "src"
->>>>>>> b7e3cea9691e3544ac1a850b856e4217ade77132
     num_tasks = 16
     num_tasks_per_node = 4
     num_nodes = num_tasks // num_tasks_per_node
     num_gpus_per_node = num_tasks_per_node
-<<<<<<< HEAD
     throughput_per_gpu = 309.61
     executable = 'python cnn_distr.py'
-=======
-    throughput_per_gpu = 864.62
-    executable = "python cnn_distr.py"
->>>>>>> b7e3cea9691e3544ac1a850b856e4217ade77132
     throughput_total = throughput_per_gpu * num_tasks
 
     reference = {
