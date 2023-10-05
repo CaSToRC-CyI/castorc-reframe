@@ -16,7 +16,7 @@ num_warmup_epochs = 2
 num_epochs = 5
 batch_size_per_gpu = 256
 num_iters = 25
-model_name = 'resnet50'
+model_name = "resnet50"
 
 distr_env = DistributedEnviron()
 dist.init_process_group(backend="nccl")
@@ -45,11 +45,7 @@ ddp_model = DistributedDataParallel(model, device_ids=[device])
 
 train_set = SyntheticDataset()
 train_sampler = DistributedSampler(
-    train_set,
-    num_replicas=world_size,
-    rank=rank,
-    shuffle=False,
-    seed=42
+    train_set, num_replicas=world_size, rank=rank, shuffle=False, seed=42
 )
 train_loader = DataLoader(
     train_set,
@@ -83,8 +79,10 @@ for epoch in range(num_epochs):
     imgs_sec.append(batch_size_per_gpu * num_iters / dt)
 
     if rank == 0:
-        print(f' * Rank {rank} - Epoch {epoch:2d}: '
-              f'{imgs_sec[epoch]:.2f} images/sec per GPU')
+        print(
+            f" * Rank {rank} - Epoch {epoch:2d}: "
+            f"{imgs_sec[epoch]:.2f} images/sec per GPU"
+        )
 
 imgs_sec_total = np.mean(imgs_sec) * world_size * device_count
 if rank == 0:
