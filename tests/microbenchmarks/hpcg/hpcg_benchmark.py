@@ -70,7 +70,7 @@ class HPCGCheckRef(rfm.RegressionTest, HPCGHookMixin):
     reference = {"cyclone:cpu": {"gflops": (23.73, -0.1, None, "Gflop/s")}}
 
     maintainers = ["cstyl"]
-    tags = {"benchmark", "diagnostic", "maintenance"}
+    tags = {"benchmark", "diagnostic", "maintenance", "performance"}
 
     @run_before("compile")
     def set_build_opts(self):
@@ -145,8 +145,8 @@ class HPCGCheckMKL(rfm.RegressionTest, HPCGHookMixin):
         "cyclone:cpu": {"gflops": (38.10, -0.1, None, "Gflop/s")},
     }
 
-    maintainers = ["CS"]
-    tags = {"diagnostic", "benchmark"}
+    maintainers = ["cstyl"]
+    tags = {"benchmark", "diagnostic", "maintenance", "performance"}
 
     @property
     @deferrable

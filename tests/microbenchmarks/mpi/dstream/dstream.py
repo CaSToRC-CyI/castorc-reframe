@@ -77,7 +77,7 @@ class StreamTest(rfm.RegressionTest):
         }
 
         self.maintainers = ["cstyl"]
-        self.tags = {"benchmark", "diagnostic", "maintenance"}
+        self.tags = {"benchmark", "diagnostic", "maintenance", "performance"}
 
     @run_before("run")
     def set_num_threads(self):

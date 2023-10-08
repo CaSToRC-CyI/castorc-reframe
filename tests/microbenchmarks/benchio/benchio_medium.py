@@ -13,11 +13,7 @@ import contextlib
 class benchioMediumTest(rfm.RegressionTest):
     valid_systems = ["cyclone:cpu"]
     valid_prog_environs = ["PrgEnv-gnu-nocuda"]
-
-    tags = {"performance", "short", "io"}
-
     num_nodes = parameter([8])
-
     benchmark_info = parameter(
         [
             ("nvme", "/nvme/h/cy21cs1/reframe_data"),
@@ -26,7 +22,6 @@ class benchioMediumTest(rfm.RegressionTest):
         fmt=lambda x: x[0],
         loggable=True,
     )
-
     exclusive_access = True
 
     # Number of cores for each system
@@ -45,6 +40,10 @@ class benchioMediumTest(rfm.RegressionTest):
             "cyclone:cpu": {"unstriped_mpiio": (6.5, -0.8, 0.8, "GB/s")},
         },
     }
+
+    maintainers = ["cstyl"]
+    tags = {"benchmark", "diagnostic", "maintenance", "performance"}
+    
 
     def __init__(self, **kwds):
         super().__init__()
