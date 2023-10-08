@@ -104,7 +104,7 @@ class MpiHelloTest(rfm.RegressionTest):
 
         self.maintainers = ["cstyl"]
         self.tags = {"diagnostic", "maintenance"}
-        
+
     @run_before("run")
     def set_impi_env_variable(self):
         cs = self.current_system.name

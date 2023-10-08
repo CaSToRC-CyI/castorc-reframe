@@ -65,7 +65,7 @@ class StreamTestCycloneCPU(rfm.RegressionTest):
                 },
             },
         }
-        
+
         self.maintainers = ["cstyl"]
         self.tags = {"benchmark", "diagnostic", "maintenance"}
 
