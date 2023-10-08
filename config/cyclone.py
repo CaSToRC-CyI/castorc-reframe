@@ -37,7 +37,7 @@ site_configuration = {
                         "PrgEnv-intel-nompi",
                         "PrgEnv-intel",
                     ],
-                    "max_jobs": 16,
+                    "max_jobs": 64,
                 },
                 {
                     "name": "gpu",
@@ -58,7 +58,7 @@ site_configuration = {
                         "PrgEnv-intel-nompi",
                         "PrgEnv-intel",
                     ],
-                    "max_jobs": 16,
+                    "max_jobs": 64,
                     "features": ["gpu", "nvgpu"],
                     "resources": [
                         {"name": "gres", "options": ["--gres=gpu:{num_gpus_per_node}"]},
@@ -118,41 +118,41 @@ site_configuration = {
             "ftn": "mpiifort",
         },
     ],  # end of environments
-    "logging": [
+    'logging': [
         {
-            "level": "debug",
-            "handlers": [
+            'perflog_compat': True,
+            'handlers': [
                 {
-                    "type": "stream",
-                    "name": "stdout",
-                    "level": "info",
-                    "format": "%(message)s",
+                    'type': 'file',
+                    'name': 'reframe.log',
+                    'level': 'debug2',
+                    'format': '[%(asctime)s] %(levelname)s: %(check_info)s: %(message)s',   # noqa: E501
+                    'append': False
                 },
                 {
-                    "type": "file",
-                    "level": "debug",
-                    "format": "[%(asctime)s] %(levelname)s: %(check_info)s: %(message)s",  # noqa: E501
-                    "append": False,
+                    'type': 'stream',
+                    'name': 'stdout',
+                    'level': 'info',
+                    'format': '%(message)s'
                 },
-            ],
-            "handlers_perflog": [
                 {
-                    "type": "filelog",
-                    "prefix": "%(check_system)s/%(check_partition)s",
-                    "level": "info",
-                    "format": (
-                        "%(check_job_completion_time)s|reframe %(version)s|"
-                        "%(check_info)s|jobid=%(check_jobid)s|"
-                        "%(check_perf_var)s=%(check_perf_value)s|"
-                        "ref=%(check_perf_ref)s "
-                        "(l=%(check_perf_lower_thres)s, "
-                        "u=%(check_perf_upper_thres)s)|"
-                        "%(check_perf_unit)s"
-                    ),
-                    "append": True,
+                    'type': 'file',
+                    'name': 'reframe.out',
+                    'level': 'info',
+                    'format': '%(message)s',
+                    'append': False
                 }
             ],
+            'handlers_perflog': [
+                {
+                    'type': 'filelog',
+                    'prefix': '%(check_system)s/%(check_partition)s',
+                    'level': 'info',
+                    'format': '%(check_job_completion_time)s|reframe %(version)s|%(check_info)s|jobid=%(check_jobid)s|num_tasks=%(check_num_tasks)s|%(check_perf_var)s=%(check_perf_value)s|ref=%(check_perf_ref)s (l=%(check_perf_lower_thres)s, u=%(check_perf_upper_thres)s)|%(check_perf_unit)s',   # noqa: E501
+                    'datefmt': '%FT%T%:z',
+                    'append': True
+                },
+            ]
         }
     ],
-    # rfmdocend: logging
 }
