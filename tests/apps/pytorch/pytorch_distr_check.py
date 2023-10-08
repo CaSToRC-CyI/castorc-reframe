@@ -25,7 +25,7 @@ class pytorch_distr_cnn(rfm.RunOnlyRegressionTest):
         }
     }
 
-    modules = ['torchvision/0.13.1-foss-2022a-CUDA-11.7.0']
+    modules = ["torchvision/0.13.1-foss-2022a-CUDA-11.7.0"]
 
     maintainers = ["cstyl"]
     tags = {"applications", "performance"}

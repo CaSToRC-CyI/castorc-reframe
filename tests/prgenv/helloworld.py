@@ -219,7 +219,7 @@ class HelloWorldTestMPIOpenMP(HelloWorldBaseTest):
 
     maintainers = ["cstyl"]
     tags = {"diagnostic", "maintenance"}
-    
+
     @run_after("init")
     def set_prgenv_compilation_flags_map(self):
         self.prgenv_flags = {

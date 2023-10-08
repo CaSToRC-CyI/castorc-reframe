@@ -19,7 +19,7 @@ class DGEMMTestCycloneCPU(rfm.RegressionTest):
     # the perf patterns are automaticaly generated inside sanity
     perf_patterns = {}
     valid_systems = ["cyclone:cpu"]
-    valid_prog_environs = ['PrgEnv-gnu-nompi-nocuda', 'PrgEnv-intel-nompi']
+    valid_prog_environs = ["PrgEnv-gnu-nompi-nocuda", "PrgEnv-intel-nompi"]
 
     modules = ["OpenBLAS/0.3.20-GCC-11.3.0", "imkl/2022.2.1"]
 

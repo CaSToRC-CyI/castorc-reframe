@@ -40,7 +40,7 @@ class HPCGHookMixin(rfm.RegressionMixin):
                 n -= 1
             else:
                 break
-        n=4
+        n = 4
         self.num_tasks = int(n * ntasks_per_node)
         self.num_tasks_per_node = ntasks_per_node
 
@@ -120,7 +120,9 @@ class HPCGCheckMKL(rfm.RegressionTest, HPCGHookMixin):
     valid_prog_environs = ["PrgEnv-intel"]
     build_system = "Make"
     prebuild_cmds = [
-        "cp -R ${MKLROOT}/benchmarks/hpcg/* .", "mv Make.CycloneCPU_Intel setup", "./configure CycloneCPU_Intel",
+        "cp -R ${MKLROOT}/benchmarks/hpcg/* .",
+        "mv Make.CycloneCPU_Intel setup",
+        "./configure CycloneCPU_Intel",
     ]
     executable = "bin/xhpcg_skx"
     executable_opts = ["--nx=104", "--ny=104", "--nz=104", "-t2"]
