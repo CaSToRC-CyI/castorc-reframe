@@ -9,17 +9,17 @@
 #                    National Supercomputer Centre
 #
 # Edits for python3: Victor Eijkhout (eijkhout@tacc.utexas.edu)
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
@@ -41,18 +41,22 @@ __version__ = "1.17"
 import re
 import itertools
 
+
 # Exception used for error reporting to the caller
-class BadHostlist(Exception): pass
+class BadHostlist(Exception):
+    pass
+
 
 # Configuration to guard against ridiculously long expanded lists
 MAX_SIZE = 100000
 
 # Hostlist expansion
 
+
 def expand_hostlist(hostlist, allow_duplicates=False, sort=False):
     """Expand a hostlist expression string to a Python list.
 
-    Example: expand_hostlist("n[9-11],d[01-02]") ==> 
+    Example: expand_hostlist("n[9-11],d[01-02]") ==>
              ['n9', 'n10', 'n11', 'd01', 'd02']
 
     Unless allow_duplicates is true, duplicates will be purged
@@ -62,18 +66,21 @@ def expand_hostlist(hostlist, allow_duplicates=False, sort=False):
     results = []
     bracket_level = 0
     part = ""
-    
+
     for c in hostlist + ",":
         if c == "," and bracket_level == 0:
             # Comma at top level, split!
-            if part: results.extend(expand_part(part))
+            if part:
+                results.extend(expand_part(part))
             part = ""
             bad_part = False
         else:
             part += c
 
-        if c == "[": bracket_level += 1
-        elif c == "]": bracket_level -= 1
+        if c == "[":
+            bracket_level += 1
+        elif c == "]":
+            bracket_level -= 1
 
         if bracket_level > 1:
             raise BadHostlist("nested brackets")
@@ -89,6 +96,7 @@ def expand_hostlist(hostlist, allow_duplicates=False, sort=False):
         results = numerically_sorted(results)
     return results
 
+
 def expand_part(s):
     """Expand a part (e.g. "x[1-2]y[1-3][1-3]") (no outer level commas)."""
 
@@ -101,8 +109,8 @@ def expand_part(s):
     # 2) rangelist in brackets (may be missing)
     # 3) the rest
 
-    m = re.match(r'([^,\[]*)(\[[^\]]*\])?(.*)', s)
-    (prefix, rangelist, rest) = m.group(1,2,3)
+    m = re.match(r"([^,\[]*)(\[[^\]]*\])?(.*)", s)
+    (prefix, rangelist, rest) = m.group(1, 2, 3)
 
     # Expand the rest first (here is where we recurse!)
     rest_expanded = expand_part(rest)
@@ -120,33 +128,35 @@ def expand_part(s):
     if len(us_expanded) * len(rest_expanded) > MAX_SIZE:
         raise BadHostlist("results too large")
 
-    return [us_part + rest_part
-            for us_part in us_expanded
-            for rest_part in rest_expanded]
+    return [
+        us_part + rest_part for us_part in us_expanded for rest_part in rest_expanded
+    ]
+
 
 def expand_rangelist(prefix, rangelist):
-    """ Expand a rangelist (e.g. "1-10,14"), putting a prefix before."""
-    
+    """Expand a rangelist (e.g. "1-10,14"), putting a prefix before."""
+
     # Split at commas and expand each range separately
     results = []
     for range_ in rangelist.split(","):
         results.extend(expand_range(prefix, range_))
     return results
 
+
 def expand_range(prefix, range_):
-    """ Expand a range (e.g. 1-10 or 14), putting a prefix before."""
+    """Expand a range (e.g. 1-10 or 14), putting a prefix before."""
 
     # Check for a single number first
-    m = re.match(r'^[0-9]+$', range_)
+    m = re.match(r"^[0-9]+$", range_)
     if m:
         return ["%s%s" % (prefix, range_)]
 
     # Otherwise split low-high
-    m = re.match(r'^([0-9]+)-([0-9]+)$', range_)
+    m = re.match(r"^([0-9]+)-([0-9]+)$", range_)
     if not m:
         raise BadHostlist("bad range")
 
-    (s_low, s_high) = m.group(1,2)
+    (s_low, s_high) = m.group(1, 2)
     low = int(s_low)
     high = int(s_high)
     width = len(s_low)
@@ -157,9 +167,10 @@ def expand_range(prefix, range_):
         raise BadHostlist("range too large")
 
     results = []
-    for i in range(low, high+1):
+    for i in range(low, high + 1):
         results.append("%s%0*d" % (prefix, width, i))
     return results
+
 
 def remove_duplicates(l):
     """Remove duplicates from a list (but keep the order)."""
@@ -171,9 +182,11 @@ def remove_duplicates(l):
             seen.add(e)
     return results
 
+
 # Hostlist collection
 
-def collect_hostlist(hosts, silently_discard_bad = False):
+
+def collect_hostlist(hosts, silently_discard_bad=False):
     """Collect a hostlist string from a Python list of hosts.
 
     We start grouping from the rightmost numerical part.
@@ -192,11 +205,12 @@ def collect_hostlist(hosts, silently_discard_bad = False):
     for host in hosts:
         # We remove leading and trailing whitespace first, and skip empty lines
         host = host.strip()
-        if host == "": continue
+        if host == "":
+            continue
 
         # We cannot accept a host containing any of the three special
         # characters in the hostlist syntax (comma and flat brackets)
-        if re.search(r'[][,]', host):
+        if re.search(r"[][,]", host):
             if silently_discard_bad:
                 continue
             else:
@@ -209,6 +223,7 @@ def collect_hostlist(hosts, silently_discard_bad = False):
     while looping:
         left_right, looping = collect_hostlist_1(left_right)
     return ",".join([left + right for left, right in left_right])
+
 
 def collect_hostlist_1(left_right):
     """Collect a hostlist string from a list of hosts (left+right).
@@ -229,13 +244,13 @@ def collect_hostlist_1(left_right):
         remaining.add(host)
 
         # Match the left part into parts
-        m = re.match(r'^(.*?)([0-9]+)?([^0-9]*)$', left)
-        (prefix, num_str, suffix) = m.group(1,2,3)
+        m = re.match(r"^(.*?)([0-9]+)?([^0-9]*)$", left)
+        (prefix, num_str, suffix) = m.group(1, 2, 3)
 
         # Add the right part unprocessed to the suffix.
         # This ensures than an already computed range expression
         # in the right part is not analyzed again.
-        suffix = suffix + right 
+        suffix = suffix + right
 
         if num_str is None:
             # A left part with no numeric part at all gets special treatment!
@@ -249,7 +264,7 @@ def collect_hostlist_1(left_right):
             # A left part with at least an numeric part
             # (we care about the rightmost numeric part)
             num_int = int(num_str)
-            num_width = len(num_str) # This width includes leading zeroes
+            num_width = len(num_str)  # This width includes leading zeroes
             sortlist.append(((prefix, suffix), num_int, num_width, host))
 
     # Sort lexicographically, first on prefix, then on suffix, then on
@@ -262,27 +277,25 @@ def collect_hostlist_1(left_right):
     # right) tuples.
 
     results = []
-    needs_another_loop = False 
+    needs_another_loop = False
 
     # Now group entries with the same prefix+suffix combination (the
     # key is the first element in the sortlist) to loop over them and
     # then to loop over the list of hosts sharing the same
     # prefix+suffix combination.
 
-    for ((prefix, suffix), group) in itertools.groupby(sortlist,
-                                                       key=lambda x:x[0]):
-
+    for (prefix, suffix), group in itertools.groupby(sortlist, key=lambda x: x[0]):
         if suffix is None:
             # Special case: a host with no numeric part
-            results.append(("", prefix)) # Move everything to the right part
+            results.append(("", prefix))  # Move everything to the right part
             remaining.remove(prefix)
         else:
             # The general case. We prepare to collect a list of
             # ranges expressed as (low, high, width) for later
             # formatting.
             range_list = []
-    
-            for ((prefix2, suffix2), num_int, num_width, host) in group:
+
+            for (prefix2, suffix2), num_int, num_width, host in group:
                 if host not in remaining:
                     # Below, we will loop internally to enumate a whole range
                     # at a time. We then remove the covered hosts from the set.
@@ -309,15 +322,20 @@ def collect_hostlist_1(left_right):
             needs_another_loop = True
             if len(range_list) == 1 and range_list[0][0] == range_list[0][1]:
                 # Special case to make sure that n1 is not shown as n[1] etc
-                results.append((prefix,
-                                "%0*d%s" % 
-                               (range_list[0][2], range_list[0][0], suffix)))
+                results.append(
+                    (prefix, "%0*d%s" % (range_list[0][2], range_list[0][0], suffix))
+                )
             else:
                 # General case where high > low
-                results.append((prefix, "[" + \
-                                   ",".join([format_range(l, h, w)
-                                             for l, h, w in range_list]) + \
-                                   "]" + suffix))
+                results.append(
+                    (
+                        prefix,
+                        "["
+                        + ",".join([format_range(l, h, w) for l, h, w in range_list])
+                        + "]"
+                        + suffix,
+                    )
+                )
 
     # At this point, the set of remaining hosts should be empty and we
     # are ready to return the result, together with the flag that says
@@ -325,6 +343,7 @@ def collect_hostlist_1(left_right):
     # left part).
     assert not remaining
     return results, needs_another_loop
+
 
 def format_range(low, high, width):
     """Format a range from low to high inclusively, with a certain width."""
@@ -334,7 +353,9 @@ def format_range(low, high, width):
     else:
         return "%0*d-%0*d" % (width, low, width, high)
 
+
 # Sort a list of hosts numerically
+
 
 def numerically_sorted(l):
     """Sort a list of hosts numerically.
@@ -344,15 +365,20 @@ def numerically_sorted(l):
 
     return sorted(l, key=numeric_sort_key)
 
+
 nsk_re = re.compile("([0-9]+)|([^0-9]+)")
+
+
 def numeric_sort_key(x):
     return [handle_int_nonint(i_ni) for i_ni in nsk_re.findall(x)]
+
 
 def handle_int_nonint(int_nonint_tuple):
     if int_nonint_tuple[0]:
         return int(int_nonint_tuple[0])
     else:
         return int_nonint_tuple[1]
+
 
 # Parse SLURM_TASKS_PER_NODE into a list of task numbers
 #
@@ -366,10 +392,11 @@ def handle_int_nonint(int_nonint_tuple):
 #              three nodes will each execute three tasks and the
 #              fourth node will execute one task.
 
+
 def parse_slurm_tasks_per_node(s):
     res = []
     for part in s.split(","):
-        m = re.match(r'^([0-9]+)(\(x([0-9]+)\))?$', part)
+        m = re.match(r"^([0-9]+)(\(x([0-9]+)\))?$", part)
         if m:
             tasks = int(m.group(1))
             repetitions = m.group(3)
@@ -385,11 +412,15 @@ def parse_slurm_tasks_per_node(s):
             raise BadHostlist("bad task list syntax")
     return res
 
+
 #
 # Keep this part to tell users where the command line interface went
 #
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import os, sys
-    sys.stderr.write("The command line utility has been moved to a separate 'hostlist' program.\n")
+
+    sys.stderr.write(
+        "The command line utility has been moved to a separate 'hostlist' program.\n"
+    )
     sys.exit(os.EX_USAGE)
