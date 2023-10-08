@@ -48,7 +48,7 @@ class benchioMediumTestMultiFile(rfm.RegressionTest):
             "cyclone:cpu": {"unstriped_file": (14.0, -0.8, 0.8, "GB/s")},
         },
     }
-    
+
     maintainers = ["cstyl"]
     tags = {"benchmark", "diagnostic", "maintenance", "performance"}
 

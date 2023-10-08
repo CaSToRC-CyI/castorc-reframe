@@ -52,7 +52,6 @@ class benchioSmallTest(rfm.RegressionTest):
     maintainers = ["cstyl"]
     tags = {"diagnostic", "maintenance"}
 
-
     def __init__(self, **kwds):
         super().__init__()
         self.executable_opts = ("1260 1260 1260 global mpiio unstriped").split()

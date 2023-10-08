@@ -43,7 +43,6 @@ class benchioMediumTest(rfm.RegressionTest):
 
     maintainers = ["cstyl"]
     tags = {"benchmark", "diagnostic", "maintenance", "performance"}
-    
 
     def __init__(self, **kwds):
         super().__init__()
