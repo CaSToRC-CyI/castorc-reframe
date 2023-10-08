@@ -76,8 +76,8 @@ class StreamTest(rfm.RegressionTest):
             "cyclone:cpu": ["4500000", "1000"],
         }
 
-        self.maintainers = ["CS"]
-        self.tags = {"performance", "short"}
+        self.maintainers = ["cstyl"]
+        self.tags = {"benchmark", "diagnostic", "maintenance"}
 
     @run_before("run")
     def set_num_threads(self):

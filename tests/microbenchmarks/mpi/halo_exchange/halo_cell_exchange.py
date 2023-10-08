@@ -102,6 +102,7 @@ class HaloCellExchangeTest(rfm.RegressionTest):
             },
         }
 
-        self.maintainers = ["CS"]
         self.strict_check = False
-        self.tags = {"benchmark"}
+
+        self.maintainers = ["cstyl"]
+        self.tags = {"benchmark", "diagnostic", "maintenance"}

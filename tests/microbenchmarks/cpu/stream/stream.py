@@ -65,8 +65,9 @@ class StreamTestCycloneCPU(rfm.RegressionTest):
                 },
             },
         }
-        self.tags = {"maintenance"}
-        self.maintainers = ["CS"]
+        
+        self.maintainers = ["cstyl"]
+        self.tags = {"benchmark", "diagnostic", "maintenance"}
 
     @run_after("setup")
     def prepare_test(self):

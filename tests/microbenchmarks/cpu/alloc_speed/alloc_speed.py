@@ -14,8 +14,9 @@ class AllocSpeedTest(rfm.RegressionTest):
     valid_prog_environs = ["PrgEnv-gnu-nocuda"]
     build_system = "SingleSource"
     exclusive_access = True
-    maintainers = ["CS"]
-    tags = {"production"}
+
+    maintainers = ["cstyl"]
+    tags = {"benchmark", "diagnostic", "maintenance"}
 
     reference = {
         "cyclone:cpu": {"time": (0.29, None, 0.15, "s")},

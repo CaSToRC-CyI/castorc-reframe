@@ -40,7 +40,7 @@ class HPCGHookMixin(rfm.RegressionMixin):
                 n -= 1
             else:
                 break
-
+        n=4
         self.num_tasks = int(n * ntasks_per_node)
         self.num_tasks_per_node = ntasks_per_node
 
@@ -60,10 +60,17 @@ class HPCGCheckRef(rfm.RegressionTest, HPCGHookMixin):
     num_cpus_per_task = 1
     exclusive_access = True
 
+    cores = variable(
+        dict,
+        value={
+            "cyclone:cpu": 40,
+        },
+    )
+
     reference = {"cyclone:cpu": {"gflops": (23.73, -0.1, None, "Gflop/s")}}
 
-    maintainers = ["CS"]
-    tags = {"diagnostic", "benchmark"}
+    maintainers = ["cstyl"]
+    tags = {"benchmark", "diagnostic", "maintenance"}
 
     @run_before("compile")
     def set_build_opts(self):
@@ -81,13 +88,7 @@ class HPCGCheckRef(rfm.RegressionTest, HPCGHookMixin):
         if self.current_partition.processor.num_cores:
             self.num_tasks_per_node = self.current_partition.processor.num_cores
         else:
-            if (
-                self.current_system.name in "cyclone"
-                and self.current_partition.name in "cpu"
-            ):
-                self.num_tasks_per_node = 40
-            else:
-                self.num_tasks_per_node = 1
+            self.num_tasks_per_node = self.cores.get(self.current_partition.fullname, 1)
 
     @performance_function("Gflop/s")
     def gflops(self):
@@ -119,13 +120,19 @@ class HPCGCheckMKL(rfm.RegressionTest, HPCGHookMixin):
     valid_prog_environs = ["PrgEnv-intel"]
     build_system = "Make"
     prebuild_cmds = [
-        "cp -r ${MKLROOT}/benchmarks/hpcg/* .",
-        "mv Make.CycloneCPU setup",
-        "./configure CycloneCPU_Intel",
+        "cp -R ${MKLROOT}/benchmarks/hpcg/* .", "mv Make.CycloneCPU_Intel setup", "./configure CycloneCPU_Intel",
     ]
     executable = "bin/xhpcg_skx"
     executable_opts = ["--nx=104", "--ny=104", "--nz=104", "-t2"]
     exclusive_access = True
+
+    cores = variable(
+        dict,
+        value={
+            "cyclone:cpu": 40,
+        },
+    )
+
     num_tasks = 0
     env_vars = {
         "I_MPI_PMI_LIBRARY": "/usr/lib64/libpmi.so",
@@ -152,18 +159,11 @@ class HPCGCheckMKL(rfm.RegressionTest, HPCGHookMixin):
 
     @run_before("compile")
     def set_tasks(self):
-        # FIXME: Auto-detecting processor info for remote partition is currently problematic.
-        # See #2914 for more info - Hardcode values until is fixed
         if self.current_partition.processor.num_cores:
             self.num_tasks_per_node = self.current_partition.processor.num_cores
         else:
-            if (
-                self.current_system.name in "cyclone"
-                and self.current_partition.name in "cpu"
-            ):
-                self.num_tasks_per_node = 40
-            else:
-                self.num_tasks_per_node = 1
+            self.num_tasks_per_node = self.cores.get(self.current_partition.fullname, 1)
+        self.num_cpus_per_task = 1
 
     @performance_function("Gflop/s")
     def gflops(self):

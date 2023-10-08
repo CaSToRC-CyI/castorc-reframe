@@ -24,8 +24,8 @@ class castorc_build_osu_benchmarks(build_osu_benchmarks):
 
 class castorc_osu_benchmarks(osu_build_run):
     exclusive_access = True
-    tags = {"production", "benchmark"}
-    maintainers = ["CS"]
+    maintainers = ["cstyl"]
+    tags = {"benchmark", "diagnostic", "maintenance"}
 
 
 @rfm.simple_test

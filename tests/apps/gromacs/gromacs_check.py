@@ -39,11 +39,11 @@ class GromacsBaseCheck(rfm.RunOnlyRegressionTest):
             )
         }
 
-        self.maintainers = ["CS"]
         self.strict_check = True
         self.use_multithreading = False
         self.num_nodes = 2
 
+        self.maintainers = ["cstyl"]
         self.tags = {"applications", "performance"}
 
 

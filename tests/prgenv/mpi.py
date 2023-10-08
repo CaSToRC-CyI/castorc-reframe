@@ -69,6 +69,9 @@ class MpiInitTest(rfm.RegressionTest):
             ]
         )
 
+        self.maintainers = ["cstyl"]
+        self.tags = {"diagnostic", "maintenance"}
+
     @run_before("run")
     def set_impi_env_variable(self):
         cs = self.current_system.name
@@ -99,6 +102,9 @@ class MpiHelloTest(rfm.RegressionTest):
         )
         self.sanity_patterns = sn.assert_eq(num_processes, self.num_tasks_assigned - 1)
 
+        self.maintainers = ["cstyl"]
+        self.tags = {"diagnostic", "maintenance"}
+        
     @run_before("run")
     def set_impi_env_variable(self):
         cs = self.current_system.name

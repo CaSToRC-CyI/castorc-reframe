@@ -19,8 +19,7 @@ class DGEMMTestCycloneCPU(rfm.RegressionTest):
     # the perf patterns are automaticaly generated inside sanity
     perf_patterns = {}
     valid_systems = ["cyclone:cpu"]
-    # valid_prog_environs = ['PrgEnv-gnu-nompi-nocuda', 'PrgEnv-intel-nompi']
-    valid_prog_environs = ["PrgEnv-intel-nompi"]
+    valid_prog_environs = ['PrgEnv-gnu-nompi-nocuda', 'PrgEnv-intel-nompi']
 
     modules = ["OpenBLAS/0.3.20-GCC-11.3.0", "imkl/2022.2.1"]
 
@@ -34,7 +33,7 @@ class DGEMMTestCycloneCPU(rfm.RegressionTest):
         "PrgEnv-gnu-nompi-nocuda": {
             "cyclone:cpu": {"flops": (2250, -0.05, None, "Gflop/s")},
         },
-        "PrgEnv-intel": {
+        "PrgEnv-intel-nompi": {
             "cyclone:cpu": {"flops": (2350, -0.05, None, "Gflop/s")},
         },
     }
@@ -46,8 +45,8 @@ class DGEMMTestCycloneCPU(rfm.RegressionTest):
         },
     )
 
-    maintainers = ["CS"]
-    tags = {"benchmark", "diagnostic"}
+    maintainers = ["cstyl"]
+    tags = {"benchmark", "diagnostic", "maintenance"}
 
     @run_after("setup")
     def setup_reference(self):
@@ -65,7 +64,7 @@ class DGEMMTestCycloneCPU(rfm.RegressionTest):
         # configured in the environment definitions.
 
         self.build_system.cflags = ["-O3"]
-        if self.current_environ.name.startswith("PrgEnv-gnu"):
+        if self.current_environ.name.startswith("PrgEnv-gnu-nompi-nocuda"):
             self.build_system.cflags += ["-fopenmp"]
             self.build_system.cflags += ["-I$EBROOTOPENBLAS/include"]
             self.build_system.ldflags = [
@@ -74,7 +73,7 @@ class DGEMMTestCycloneCPU(rfm.RegressionTest):
                 "-lpthread",
                 "-lgfortran",
             ]
-        elif self.current_environ.name.startswith("PrgEnv-intel"):
+        elif self.current_environ.name.startswith("PrgEnv-intel-nompi"):
             self.build_system.cppflags = ["-DMKL_ILP64", "-I${MKLROOT}/include"]
             self.build_system.cflags = ["-qopenmp"]
             self.build_system.ldflags = [

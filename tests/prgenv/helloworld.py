@@ -25,7 +25,9 @@ class HelloWorldBaseTest(rfm.RegressionTest):
     valid_prog_environs = ["*"]
     reference = {"*": {"compilation_time": (60, None, 0.1, "s")}}
     exclusive_access = True
-    maintainers = ["CS"]
+
+    maintainers = ["cstyl"]
+    tags = {"diagnostic", "maintenance"}
 
     @run_after("init")
     def set_description(self):
@@ -101,6 +103,9 @@ class HelloWorldTestSerial(HelloWorldBaseTest):
     num_tasks_per_node = 1
     num_cpus_per_task = 1
 
+    maintainers = ["cstyl"]
+    tags = {"diagnostic", "maintenance"}
+
     @run_after("init")
     def update_description(self):
         self.descr += " Serial "
@@ -138,6 +143,9 @@ class HelloWorldTestOpenMP(HelloWorldBaseTest):
     num_tasks = 1
     num_tasks_per_node = 1
     num_cpus_per_task = 4
+
+    maintainers = ["cstyl"]
+    tags = {"diagnostic", "maintenance"}
 
     @run_after("init")
     def set_prgenv_compilation_flags_map(self):
@@ -179,6 +187,9 @@ class HelloWorldTestMPI(HelloWorldBaseTest):
     valid_systems = ["cyclone:cpu"]
     valid_prog_environs = ["PrgEnv-gnu-nocuda", "PrgEnv-gnu", "PrgEnv-intel"]
 
+    maintainers = ["cstyl"]
+    tags = {"diagnostic", "maintenance"}
+
     @run_after("init")
     def update_description(self):
         self.descr += " MPI "
@@ -206,6 +217,9 @@ class HelloWorldTestMPIOpenMP(HelloWorldBaseTest):
     valid_systems = ["cyclone:cpu"]
     valid_prog_environs = ["PrgEnv-gnu-nocuda", "PrgEnv-gnu", "PrgEnv-intel"]
 
+    maintainers = ["cstyl"]
+    tags = {"diagnostic", "maintenance"}
+    
     @run_after("init")
     def set_prgenv_compilation_flags_map(self):
         self.prgenv_flags = {
