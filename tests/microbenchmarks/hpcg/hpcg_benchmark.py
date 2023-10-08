@@ -40,7 +40,7 @@ class HPCGHookMixin(rfm.RegressionMixin):
                 n -= 1
             else:
                 break
-        n=4
+            
         self.num_tasks = int(n * ntasks_per_node)
         self.num_tasks_per_node = ntasks_per_node
 
